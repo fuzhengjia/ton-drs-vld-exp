@@ -99,6 +99,7 @@ public class ResaContainer extends FilteredMetricsCollector {
             ((Map<String, Object>) topo.get("targets")).put(comp, targets);
         }
         ctx.emitMetric("topology.info", topo);
+        ctx.emitMetric("outputMetrics", outputMetrics);
     }
 
     private void addMetricsOutputListener() {
