@@ -28,14 +28,13 @@ public class TestResaMetricAnalyzer {
     public static void main(String[] args) {
         System.out.println("ResaMetricAnalyzer based on ResaDataSource");
         try {
-            String topName = args[1];
-            String metricQueue = args[4];
-            long sleepTime = Long.parseLong(args[5]);
-            int maxAllowedExecutors = Integer.parseInt(args[6]);
-            double qos = Double.parseDouble(args[7]);
-            int historySize = Integer.parseInt(args[8]);
-            int ignoreSize = Integer.parseInt(args[9]);
-            double sampleRate = Double.parseDouble(args[10]);
+            String topName = args[0];
+            String metricQueue = args[1];
+            long sleepTime = Long.parseLong(args[2]);
+            int maxAllowedExecutors = Integer.parseInt(args[3]);
+            double qos = Double.parseDouble(args[4]);
+            int historySize = Integer.parseInt(args[5]);
+            int ignoreSize = Integer.parseInt(args[6]);
             System.out.println("Topology name: " + topName + ", metricQueue: " + metricQueue +
                     ", sleepTime: " + sleepTime + ", maxAllowed: " + maxAllowedExecutors + ", qos (ms): " + qos);
             TestResaMetricAnalyzer rt = new TestResaMetricAnalyzer();
