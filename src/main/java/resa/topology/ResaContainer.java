@@ -82,6 +82,7 @@ public class ResaContainer extends FilteredMetricsCollector {
             metricSendThread.start();
             LOG.info("Metrics send thread started");
         }
+        System.out.println("ResaContainer.Prepare(), outputMetrics: " + outputMetrics);
     }
 
     private void outputTopologyInfo(TopologyContext context) {
