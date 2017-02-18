@@ -4,13 +4,15 @@ import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.tuple.Fields;
+import resa.topology.ResaTopologyBuilder;
+import resa.util.ResaConfig;
 
-import static topology.ConfigUtil.*;
+import static topology.ConfigUtil.getInt;
 
 /**
  * Created by ding on 14-7-3.
  */
-public class DectationTopology implements Constant {
+public class DectationTopologyResa implements Constant {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
@@ -18,8 +20,11 @@ public class DectationTopology implements Constant {
             System.exit(0);
         }
         Config conf = ConfigUtil.readConfig(args[0]);
+        if (conf == null) {
+            throw new RuntimeException("cannot find conf file " + args[0]);
+        }
 
-        TopologyBuilder builder = new TopologyBuilder();
+        TopologyBuilder builder = new ResaTopologyBuilder();
 
         String host = (String) conf.get("redis.host");
         int port = getInt(conf, "redis.port", 6379);
@@ -43,7 +48,15 @@ public class DectationTopology implements Constant {
         conf.setMaxSpoutPending(getInt(conf, "vd-MaxSpoutPending", 0));
         conf.setStatsSampleRate(1.0);
 
-        StormSubmitter.submitTopology("ton-normal-vld-JB", conf, builder.createTopology());
+        ResaConfig resaConfig = ResaConfig.create();
+        resaConfig.putAll(conf);
+        if (resa.util.ConfigUtil.getBoolean(conf, "EnableResaMetricsCollector", false)) {
+            resaConfig.addDrsSupport();
+            resaConfig.put(ResaConfig.REBALANCE_WAITING_SECS, 0);
+            System.out.println("ResaMetricsCollector is registered");
+        }
+
+        StormSubmitter.submitTopology("ton-resa-vld-JB", resaConfig, builder.createTopology());
 
     }
 

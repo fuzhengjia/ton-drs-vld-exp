@@ -46,7 +46,7 @@ public class DectationTopologyCharlie2 implements Constant {
         conf.setMaxSpoutPending(ConfigUtil.getInt(conf, "vd-MaxSpoutPending", 0));
         conf.setStatsSampleRate(1.0);
 
-        StormSubmitter.submitTopology("resa-vd-JB-cha2", conf, builder.createTopology());
+        StormSubmitter.submitTopology("ton-normal-vld-JB-cha2", conf, builder.createTopology());
 
     }
 

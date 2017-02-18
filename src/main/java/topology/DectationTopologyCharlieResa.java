@@ -4,8 +4,12 @@ import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.tuple.Fields;
+import resa.topology.ResaTopologyBuilder;
+import resa.util.ResaConfig;
 
-import static topology.ConfigUtil.*;
+import java.io.File;
+
+import static topology.ConfigUtil.getInt;
 
 /**
  * Created by ding on 14-7-3.
@@ -14,16 +18,20 @@ import static topology.ConfigUtil.*;
  *
  * In charlie version, the number of groups organized in the featureExtractorBolt is not determined by number of tasks of Matcher bolt, but by input parameter setting.
  */
-public class DectationTopologyCharlie implements Constant {
+public class DectationTopologyCharlieResa implements Constant {
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
             System.out.println("Enter path to config file!");
             System.exit(0);
         }
-        Config conf = ConfigUtil.readConfig(args[0]);
+        Config conf = resa.util.ConfigUtil.readConfig(new File(args[0]));
 
-        TopologyBuilder builder = new TopologyBuilder();
+        if (conf == null) {
+            throw new RuntimeException("cannot find conf file " + args[0]);
+        }
+
+        TopologyBuilder builder = new ResaTopologyBuilder();
 
         String host = (String) conf.get("redis.host");
         int port = ConfigUtil.getInt(conf, "redis.port", 6379);
@@ -46,7 +54,15 @@ public class DectationTopologyCharlie implements Constant {
         conf.setMaxSpoutPending(ConfigUtil.getInt(conf, "vd-MaxSpoutPending", 0));
         conf.setStatsSampleRate(1.0);
 
-        StormSubmitter.submitTopology("ton-normal-vld-JB-cha", conf, builder.createTopology());
+        ResaConfig resaConfig = ResaConfig.create();
+        resaConfig.putAll(conf);
+        if (resa.util.ConfigUtil.getBoolean(conf, "EnableResaMetricsCollector", false)) {
+            resaConfig.addDrsSupport();
+            resaConfig.put(ResaConfig.REBALANCE_WAITING_SECS, 0);
+            System.out.println("ResaMetricsCollector is registered");
+        }
+
+        StormSubmitter.submitTopology("ton-resa-vld-JB-cha", resaConfig, builder.createTopology());
 
     }
 
